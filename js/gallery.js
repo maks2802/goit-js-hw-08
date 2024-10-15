@@ -80,31 +80,42 @@ function galleryMarkup(images) {
               </a>
             </li>
          `).join("");
-}
+};
 
 galleryList.innerHTML = galleryMarkup(images);
+
+let instance = null;
 
 galleryList.addEventListener("click", (event) => {
     event.preventDefault();
     
     if (event.target.nodeName !== "IMG") {
         return;
-    }
+    };
 
     const largeImg = event.target.dataset.source;
 
     const bodyEl = document.body;
 
-    const instance = basicLightbox.create(`
+    instance = basicLightbox.create(`
         <img src="${largeImg}" width="1112" height="640">
     `, {
-            onShow: () => {
+        onShow: () => {
             bodyEl.style.overflow = "hidden";
+            document.addEventListener("keydown", onEscape);
         },
-            onClose: () => {
+        onClose: () => {
             bodyEl.style.overflow = "visible";
+            document.removeEventListener("keydown", onEscape);
         },
     })
 
-    instance.show()
-})
+    instance.show();
+});
+
+function onEscape(event) {
+    if (event.code !== "Escape") {
+        return;
+    }
+    instance.close();
+}
